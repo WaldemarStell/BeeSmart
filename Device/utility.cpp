@@ -9,6 +9,7 @@
 #include "parson.h"
 #include "config.h"
 #include "RGB_LED.h"
+#include "utility.h"
 
 #define RGB_LED_BRIGHTNESS 32
 
@@ -79,7 +80,7 @@ void parseTwinMessage(DEVICE_TWIN_UPDATE_STATE updateState, const char *message)
     json_value_free(root_value);
 }
 
-inline void SensorInit()
+void SensorInit()
 {
     i2c = new DevI2C(D14, D15);
 
@@ -91,7 +92,7 @@ inline void SensorInit()
 
     humidity = -1;
     temperature = -1000;
-    // pressure = -1;
+    pressure = -1;
 }
 
 float readTemperature()
