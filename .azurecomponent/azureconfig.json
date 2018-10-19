@@ -1,0 +1,18 @@
+{
+    "componentConfigs": [
+        {
+            "id": "2ca5d67e-9709-14c4-c104-a587ce5f813b",
+            "folder": "",
+            "name": "",
+            "dependencies": [],
+            "type": "IoTHub",
+            "componentInfo": {
+                "values": {
+                    "iotHubConnectionString": "HostName=BeeSmartHub.azure-devices.net;SharedAccessKeyName=iothubowner;SharedAccessKey=qJzes1NP6fwCdvn23bGh0oDuJG41feYs+ld+Jf2GsCM=",
+                    "eventHubConnectionString": "Endpoint=sb://ihsuprodamres031dednamespace.servicebus.windows.net/;SharedAccessKeyName=iothubowner;SharedAccessKey=qJzes1NP6fwCdvn23bGh0oDuJG41feYs+ld+Jf2GsCM=",
+                    "eventHubConnectionPath": "iothub-ehub-beesmarthu-886930-b4324b43bc"
+                }
+            }
+        }
+    ]
+}
