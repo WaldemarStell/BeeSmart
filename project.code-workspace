@@ -10,6 +10,16 @@
         "IoTWorkbench.iothubConnectionString": "HostName=BeeSmartHub.azure-devices.net;SharedAccessKeyName=iothubowner;SharedAccessKey=qJzes1NP6fwCdvn23bGh0oDuJG41feYs+ld+Jf2GsCM=",
         "IoTWorkbench.eventHubConnectionString": "Endpoint=sb://ihsuprodamres031dednamespace.servicebus.windows.net/;SharedAccessKeyName=iothubowner;SharedAccessKey=qJzes1NP6fwCdvn23bGh0oDuJG41feYs+ld+Jf2GsCM=",
         "IoTWorkbench.eventHubConnectionPath": "iothub-ehub-beesmarthu-886930-b4324b43bc",
-        "IoTWorkbench.iothubDeviceConnectionString": "HostName=BeeSmartHub.azure-devices.net;DeviceId=BeeSmartSensor;SharedAccessKey=+JcMAopZ6egtwPmz2QPBr4G2aPUkd2+dcs96oYSyNlc="
+        "IoTWorkbench.iothubDeviceConnectionString": "HostName=BeeSmartHub.azure-devices.net;DeviceId=BeeSmartSensor;SharedAccessKey=+JcMAopZ6egtwPmz2QPBr4G2aPUkd2+dcs96oYSyNlc=",
+        "files.associations": {
+            "cmath": "cpp",
+            "cstdarg": "cpp",
+            "cstddef": "cpp",
+            "cstdio": "cpp",
+            "cstdlib": "cpp",
+            "cstring": "cpp",
+            "exception": "cpp",
+            "new": "cpp"
+        }
     }
 }

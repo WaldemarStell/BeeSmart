@@ -1,5 +1,5 @@
 // Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. 
+// Licensed under the MIT license.
 
 // #include "HTS221Sensor.h"
 // #include "LPS22HBSensor.h"
@@ -12,6 +12,8 @@
 #include "utility.h"
 
 #define RGB_LED_BRIGHTNESS 32
+#define LOOP_DELAY 1000
+#define EXPECTED_COUNT 5
 
 DevI2C *i2c;
 HTS221Sensor *sensor;
@@ -113,9 +115,36 @@ void SensorInit()
     humidity = -1;
     temperature = -1000;
     pressure = -1;
-    base_x = -1;
-    base_y = -1;
-    base_z = -1;
+
+    lis2mdl->getMAxes(axes);
+    base_x = axes[0];
+    base_y = axes[1];
+    base_z = axes[2];
+
+    int count = 0;
+    int delta = 10;
+    while (true)
+    {
+        delay(LOOP_DELAY);
+        lis2mdl->getMAxes(axes);
+
+        // Waiting for the data from sensor to become stable
+        if (abs(base_x - axes[0]) < delta && abs(base_y - axes[1]) < delta && abs(base_z - axes[2]) < delta)
+        {
+            count++;
+            if (count >= EXPECTED_COUNT)
+            {
+                break;
+            }
+        }
+        else
+        {
+            count = 0;
+            base_x = axes[0];
+            base_y = axes[1];
+            base_z = axes[2];
+        }
+    }
 }
 
 float readTemperature()
@@ -148,18 +177,14 @@ float readPressure()
     return pressure;
 }
 
-void readMagnetometer()
-{
-    axes[0] = -1;
-    axes[1] = -1;
-    axes[2] = -1;
+// void readMagnetometer()
+// {
+//     lis2mdl->getMAxes(axes);
 
-    lis2mdl->getMAxes(axes);
-
-    base_x = axes[0];
-    base_y = axes[1];
-    base_z = axes[2];
-}
+//     base_x = axes[0];
+//     base_y = axes[1];
+//     base_z = axes[2];
+// }
 
 bool readMessage(int messageId, char *payload)
 {
@@ -172,31 +197,37 @@ bool readMessage(int messageId, char *payload)
     float t = readTemperature();
     float h = readHumidity();
     float p = readPressure();
-    readMagnetometer();
+    // readMagnetometer();
 
     bool temperatureAlert = false;
-    // if(t != temperature)
-    // {
-        temperature = t;
-        json_object_set_number(root_object, "temperature", temperature);
-    // }
-    if(temperature > TEMPERATURE_ALERT_HIGHER || temperature < TEMPERATURE_ALERT_LOWER)
+    temperature = t;
+    json_object_set_number(root_object, "temperature", temperature);
+
+    if (temperature > TEMPERATURE_ALERT_HIGHER || temperature < TEMPERATURE_ALERT_LOWER)
     {
         temperatureAlert = true;
     }
-    
-    // if(h != humidity)
-    // {
-        humidity = h;
-        json_object_set_number(root_object, "humidity", humidity);
-    // }
+    humidity = h;
+    json_object_set_number(root_object, "humidity", humidity);
 
     pressure = p;
     json_object_set_number(root_object, "pressure", pressure);
+    lis2mdl->getMAxes(axes);
 
-    json_object_set_number(root_object, "magnetometer(x)", base_x);
-    json_object_set_number(root_object, "magnetometer(y)", base_y);
-    json_object_set_number(root_object, "magnetometer(z)", base_z);
+    json_object_set_number(root_object, "magnetometer(x)", axes[0]);
+    json_object_set_number(root_object, "magnetometer(y)", axes[1]);
+    json_object_set_number(root_object, "magnetometer(z)", axes[2]);
+
+    int delta = 50;
+
+    if (abs(base_x - axes[0]) < delta && abs(base_y - axes[1]) < delta && abs(base_z - axes[2]) < delta)
+    {
+        json_object_set_boolean(root_object, "Magnetsensor:Opened", false);
+    }
+    else
+    {
+        json_object_set_boolean(root_object, "Magnetsensor:Opened", true);
+    }
 
     serialized_string = json_serialize_to_string_pretty(root_value);
 
