@@ -15,13 +15,30 @@
 
 DevI2C *i2c;
 HTS221Sensor *sensor;
+
+// The pressure sensor
 LPS22HBSensor *lps22HBSensor;
+
+// The magnetometer sensor
+LIS2MDLSensor *lis2mdl;
 
 static RGB_LED rgbLed;
 static int interval = INTERVAL;
 static float humidity;
 static float temperature;
 static float pressure;
+
+// Data from magnetometer sensor
+static int axes[3];
+static int base_x;
+static int base_y;
+static int base_z;
+
+// Indicate whether the magnetometer sensor has been initialized
+static bool initialized = false;
+
+// The open / close status of the door
+static bool preOpened = false;
 
 int getInterval()
 {
@@ -90,9 +107,15 @@ void SensorInit()
     lps22HBSensor = new LPS22HBSensor(*i2c);
     lps22HBSensor->init(NULL);
 
+    lis2mdl = new LIS2MDLSensor(*i2c);
+    lis2mdl->init(NULL);
+
     humidity = -1;
     temperature = -1000;
     pressure = -1;
+    base_x = -1;
+    base_y = -1;
+    base_z = -1;
 }
 
 float readTemperature()
@@ -125,6 +148,19 @@ float readPressure()
     return pressure;
 }
 
+void readMagnetometer()
+{
+    axes[0] = -1;
+    axes[1] = -1;
+    axes[2] = -1;
+
+    lis2mdl->getMAxes(axes);
+
+    base_x = axes[0];
+    base_y = axes[1];
+    base_z = axes[2];
+}
+
 bool readMessage(int messageId, char *payload)
 {
     JSON_Value *root_value = json_value_init_object();
@@ -136,6 +172,7 @@ bool readMessage(int messageId, char *payload)
     float t = readTemperature();
     float h = readHumidity();
     float p = readPressure();
+    readMagnetometer();
 
     bool temperatureAlert = false;
     // if(t != temperature)
@@ -156,6 +193,10 @@ bool readMessage(int messageId, char *payload)
 
     pressure = p;
     json_object_set_number(root_object, "pressure", pressure);
+
+    json_object_set_number(root_object, "magnetometer(x)", base_x);
+    json_object_set_number(root_object, "magnetometer(y)", base_y);
+    json_object_set_number(root_object, "magnetometer(z)", base_z);
 
     serialized_string = json_serialize_to_string_pretty(root_value);
 
