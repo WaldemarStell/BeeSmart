@@ -214,19 +214,19 @@ bool readMessage(int messageId, char *payload)
     json_object_set_number(root_object, "pressure", pressure);
     lis2mdl->getMAxes(axes);
 
-    json_object_set_number(root_object, "magnetometer(x)", axes[0]);
-    json_object_set_number(root_object, "magnetometer(y)", axes[1]);
-    json_object_set_number(root_object, "magnetometer(z)", axes[2]);
+    json_object_set_number(root_object, "magnetometer_x", axes[0]);
+    json_object_set_number(root_object, "magnetometer_y", axes[1]);
+    json_object_set_number(root_object, "magnetometer_z", axes[2]);
 
     int delta = 50;
 
     if (abs(base_x - axes[0]) < delta && abs(base_y - axes[1]) < delta && abs(base_z - axes[2]) < delta)
     {
-        json_object_set_boolean(root_object, "Magnetsensor:Opened", false);
+        json_object_set_boolean(root_object, "Magnetsensor_Opened", false);
     }
     else
     {
-        json_object_set_boolean(root_object, "Magnetsensor:Opened", true);
+        json_object_set_boolean(root_object, "Magnetsensor_Opened", true);
     }
 
     serialized_string = json_serialize_to_string_pretty(root_value);
